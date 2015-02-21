@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/pivotal-golang/envoy/internal/handlers"
-	"github.com/pivotal-golang/envoy/internal/middleware"
+	"github.com/pivotal-cf-experimental/envoy/internal/handlers"
+	"github.com/pivotal-cf-experimental/envoy/internal/middleware"
 )
 
 func NewBrokerHandler(broker Broker) http.Handler {

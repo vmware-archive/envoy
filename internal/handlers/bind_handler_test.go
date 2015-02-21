@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/pivotal-golang/envoy/domain"
-	"github.com/pivotal-golang/envoy/internal/handlers"
+	"github.com/pivotal-cf-experimental/envoy/domain"
+	"github.com/pivotal-cf-experimental/envoy/internal/handlers"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

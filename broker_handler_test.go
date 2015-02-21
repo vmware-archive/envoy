@@ -4,10 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/pivotal-golang/envoy"
-	"github.com/pivotal-golang/envoy/domain"
-	"github.com/pivotal-golang/envoy/internal/handlers"
-	"github.com/pivotal-golang/envoy/internal/middleware"
+	"github.com/pivotal-cf-experimental/envoy"
+	"github.com/pivotal-cf-experimental/envoy/domain"
+	"github.com/pivotal-cf-experimental/envoy/internal/handlers"
+	"github.com/pivotal-cf-experimental/envoy/internal/middleware"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

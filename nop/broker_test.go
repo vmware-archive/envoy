@@ -1,8 +1,8 @@
 package nop_test
 
 import (
-	"github.com/pivotal-golang/envoy"
-	"github.com/pivotal-golang/envoy/nop"
+	"github.com/pivotal-cf-experimental/envoy"
+	"github.com/pivotal-cf-experimental/envoy/nop"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

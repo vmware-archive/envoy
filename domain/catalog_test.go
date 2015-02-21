@@ -3,7 +3,7 @@ package domain_test
 import (
 	"encoding/json"
 
-	"github.com/pivotal-golang/envoy/domain"
+	"github.com/pivotal-cf-experimental/envoy/domain"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

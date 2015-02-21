@@ -1,6 +1,6 @@
 package envoy
 
-import "github.com/pivotal-golang/envoy/domain"
+import "github.com/pivotal-cf-experimental/envoy/domain"
 
 type Broker interface {
 	Catalog() domain.Catalog

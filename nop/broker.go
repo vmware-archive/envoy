@@ -1,6 +1,6 @@
 package nop
 
-import "github.com/pivotal-golang/envoy/domain"
+import "github.com/pivotal-cf-experimental/envoy/domain"
 
 type Broker struct {
 	Cataloger

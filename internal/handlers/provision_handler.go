@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/pivotal-golang/envoy/domain"
+	"github.com/pivotal-cf-experimental/envoy/domain"
 )
 
 type Provisioner interface {

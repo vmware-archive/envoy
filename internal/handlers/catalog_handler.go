@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/pivotal-golang/envoy/domain"
+	"github.com/pivotal-cf-experimental/envoy/domain"
 )
 
 type Cataloger interface {
