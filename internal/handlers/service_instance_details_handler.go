@@ -44,7 +44,7 @@ func (handler ServiceInstanceDetailsHandler) ServeHTTP(w http.ResponseWriter, re
 	}
 
 	output.DashboardURL = response.DashboardURL
-	output.LastOperation.State = response.LastOperationState
+	output.LastOperation.State = response.LastOperationState.String()
 	output.LastOperation.Description = response.LastOperationDescription
 
 	respond(w, http.StatusOK, output)

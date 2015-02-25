@@ -59,7 +59,7 @@ func (handler ProvisionHandler) ServeHTTP(w http.ResponseWriter, req *http.Reque
 		} `json:"last_operation"`
 	}
 	output.DashboardURL = response.DashboardURL
-	output.LastOperation.State = state
+	output.LastOperation.State = state.String()
 	output.LastOperation.Description = response.LastOperationDescription
 
 	respond(w, status, output)

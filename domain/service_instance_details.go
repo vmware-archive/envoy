@@ -6,6 +6,6 @@ type ServiceInstanceDetailsRequest struct {
 
 type ServiceInstanceDetailsResponse struct {
 	DashboardURL             string
-	LastOperationState       string
+	LastOperationState       ServiceInstanceOperationState
 	LastOperationDescription string
 }
