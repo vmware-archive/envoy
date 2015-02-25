@@ -77,7 +77,7 @@ var _ = Describe("BrokerHandler", func() {
 		})
 	})
 
-	Context("PUT /v2/service_instances/:id", func() {
+	Context("Provision endpoint: PUT /v2/service_instances/:id", func() {
 		It("routes to the ProvisionHandler", func() {
 			request, err := http.NewRequest("PUT", "/v2/service_instances/banana", nil)
 			if err != nil {
@@ -102,7 +102,7 @@ var _ = Describe("BrokerHandler", func() {
 		})
 	})
 
-	Context("PUT /v2/service_instances/:instance_id/service_bindings/:binding_id", func() {
+	Context("Bind endpoint: PUT /v2/service_instances/:instance_id/service_bindings/:binding_id", func() {
 		It("routes to the BindHandler", func() {
 			request, err := http.NewRequest("PUT", "/v2/service_instances/banana/service_bindings/panic", nil)
 			if err != nil {
@@ -174,6 +174,11 @@ var _ = Describe("BrokerHandler", func() {
 
 			var match mux.RouteMatch
 			Expect(router.Match(request, &match)).To(BeFalse())
+		})
+	})
+
+	Describe("Service instance details endpoint: GET /v2/service_instances/:instance_id", func() {
+		PIt("routes to the ServiceInstanceDetailsHandler", func() {
 		})
 	})
 })

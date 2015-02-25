@@ -7,6 +7,7 @@ import (
 
 type Failure struct {
 	Description string `json:"description"`
+	Error       string `json:"error,omitempty"`
 }
 
 var EmptyJSON = map[string]interface{}{}

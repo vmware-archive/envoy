@@ -9,6 +9,11 @@ import (
 	"github.com/pivotal-cf-experimental/envoy/domain"
 )
 
+const (
+	StateSucceeded  = "succeeded"
+	StateInProgress = "in progress"
+)
+
 type Provisioner interface {
 	Provision(domain.ProvisionRequest) (domain.ProvisionResponse, error)
 }
@@ -29,6 +34,11 @@ func (handler ProvisionHandler) ServeHTTP(w http.ResponseWriter, req *http.Reque
 	if err != nil {
 		if err == domain.ServiceInstanceAlreadyExistsError {
 			respond(w, http.StatusConflict, EmptyJSON)
+		} else if err == domain.AsyncRequiredError {
+			respond(w, 422, Failure{
+				Description: "This service plan requires support for asynchronous provisioning by Cloud Foundry and its clients.",
+				Error:       "AsyncRequired",
+			})
 		} else {
 			respond(w, http.StatusInternalServerError, Failure{
 				Description: err.Error(),
@@ -36,12 +46,26 @@ func (handler ProvisionHandler) ServeHTTP(w http.ResponseWriter, req *http.Reque
 		}
 		return
 	}
+	state := StateSucceeded
+	status := http.StatusCreated
 
-	respond(w, http.StatusCreated, struct {
-		DashboardURL string `json:"dashboard_url,omitempty"`
-	}{
-		DashboardURL: response.DashboardURL,
-	})
+	if response.Async {
+		state = StateInProgress
+		status = http.StatusAccepted
+	}
+
+	var output struct {
+		DashboardURL  string `json:"dashboard_url,omitempty"`
+		LastOperation struct {
+			State       string `json:"state"`
+			Description string `json:"description,omitempty"`
+		} `json:"last_operation"`
+	}
+	output.DashboardURL = response.DashboardURL
+	output.LastOperation.State = state
+	output.LastOperation.Description = response.LastOperationDescription
+
+	respond(w, status, output)
 }
 
 func (handler ProvisionHandler) Parse(req *http.Request) domain.ProvisionRequest {
@@ -65,10 +89,11 @@ func (handler ProvisionHandler) Parse(req *http.Request) domain.ProvisionRequest
 	matches := expression.FindStringSubmatch(req.URL.Path)
 
 	return domain.ProvisionRequest{
-		InstanceID:       matches[1],
-		ServiceID:        params.ServiceID,
-		PlanID:           params.PlanID,
-		OrganizationGUID: params.OrganizationGUID,
-		SpaceGUID:        params.SpaceGUID,
+		InstanceID:        matches[1],
+		ServiceID:         params.ServiceID,
+		PlanID:            params.PlanID,
+		OrganizationGUID:  params.OrganizationGUID,
+		SpaceGUID:         params.SpaceGUID,
+		AcceptsIncomplete: req.URL.Query().Get("accepts_incomplete") == "true",
 	}
 }
