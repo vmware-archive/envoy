@@ -45,9 +45,9 @@ func (handler ProvisionHandler) ServeHTTP(w http.ResponseWriter, req *http.Reque
 				Description: err.Error(),
 			})
 		}
-
 		return
 	}
+
 	state := StateSucceeded
 	status := http.StatusCreated
 

@@ -1,11 +1,5 @@
 package domain
 
-const (
-	ServiceInstanceOperationSucceeded  = "succeeded"
-	ServiceInstanceOperationFailed     = "failed"
-	ServiceInstanceOperationInProgress = "in progress"
-)
-
 type ServiceInstanceDetailsRequest struct {
 	InstanceID string
 }
