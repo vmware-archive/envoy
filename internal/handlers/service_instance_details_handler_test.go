@@ -27,13 +27,13 @@ func (d *Details) ServiceInstanceDetails(request domain.ServiceInstanceDetailsRe
 	return d.Response, d.Error
 }
 
-var _ = Describe("GetServiceInstanceDetails Handler", func() {
-	var handler handlers.GetServiceInstanceDetailsHandler
+var _ = Describe("ServiceInstanceDetails Handler", func() {
+	var handler handlers.ServiceInstanceDetailsHandler
 	var details *Details
 
 	BeforeEach(func() {
 		details = NewDetails()
-		handler = handlers.NewGetServiceInstanceDetailsHandler(details)
+		handler = handlers.NewServiceInstanceDetailsHandler(details)
 	})
 
 	It("returns a 200 and JSON body containing the instance details", func() {

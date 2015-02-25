@@ -9,6 +9,7 @@ type Broker struct {
 	Binder
 	Unbinder
 	Deprovisioner
+	ServiceInstanceDetailer
 }
 
 type Cataloger struct{}
@@ -45,4 +46,10 @@ type Deprovisioner struct{}
 
 func (d Deprovisioner) Deprovision(domain.DeprovisionRequest) error {
 	return nil
+}
+
+type ServiceInstanceDetailer struct{}
+
+func (sid ServiceInstanceDetailer) ServiceInstanceDetails(domain.ServiceInstanceDetailsRequest) (domain.ServiceInstanceDetailsResponse, error) {
+	return domain.ServiceInstanceDetailsResponse{}, nil
 }

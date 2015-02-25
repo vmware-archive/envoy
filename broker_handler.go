@@ -15,6 +15,7 @@ func NewBrokerHandler(broker Broker) http.Handler {
 	bindHandler := handlers.NewBindHandler(broker)
 	unbindHandler := handlers.NewUnbindHandler(broker)
 	deprovisionHandler := handlers.NewDeprovisionHandler(broker)
+	serviceInstanceDetailsHandler := handlers.NewServiceInstanceDetailsHandler(broker)
 
 	routes := map[string]http.Handler{
 		"GET /v2/catalog":                                                          middleware.NewAuthenticator(catalogHandler, broker),
@@ -22,6 +23,7 @@ func NewBrokerHandler(broker Broker) http.Handler {
 		"PUT /v2/service_instances/{instance_id}/service_bindings/{binding_id}":    middleware.NewAuthenticator(bindHandler, broker),
 		"DELETE /v2/service_instances/{instance_id}/service_bindings/{binding_id}": middleware.NewAuthenticator(unbindHandler, broker),
 		"DELETE /v2/service_instances/{instance_id}":                               middleware.NewAuthenticator(deprovisionHandler, broker),
+		"GET /v2/service_instances/{instance_id}":                                  middleware.NewAuthenticator(serviceInstanceDetailsHandler, broker),
 	}
 
 	router := mux.NewRouter()

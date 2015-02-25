@@ -11,17 +11,17 @@ type ServiceInstanceDetailer interface {
 	ServiceInstanceDetails(domain.ServiceInstanceDetailsRequest) (domain.ServiceInstanceDetailsResponse, error)
 }
 
-type GetServiceInstanceDetailsHandler struct {
+type ServiceInstanceDetailsHandler struct {
 	detailer ServiceInstanceDetailer
 }
 
-func NewGetServiceInstanceDetailsHandler(detailer ServiceInstanceDetailer) GetServiceInstanceDetailsHandler {
-	return GetServiceInstanceDetailsHandler{
+func NewServiceInstanceDetailsHandler(detailer ServiceInstanceDetailer) ServiceInstanceDetailsHandler {
+	return ServiceInstanceDetailsHandler{
 		detailer: detailer,
 	}
 }
 
-func (handler GetServiceInstanceDetailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (handler ServiceInstanceDetailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	request := handler.Parse(req)
 	response, err := handler.detailer.ServiceInstanceDetails(request)
 	if err != nil {
@@ -50,7 +50,7 @@ func (handler GetServiceInstanceDetailsHandler) ServeHTTP(w http.ResponseWriter,
 	respond(w, http.StatusOK, output)
 }
 
-func (handler GetServiceInstanceDetailsHandler) Parse(req *http.Request) domain.ServiceInstanceDetailsRequest {
+func (handler ServiceInstanceDetailsHandler) Parse(req *http.Request) domain.ServiceInstanceDetailsRequest {
 	expression := regexp.MustCompile(`^/v2/service_instances/(.*)$`)
 	matches := expression.FindStringSubmatch(req.URL.Path)
 

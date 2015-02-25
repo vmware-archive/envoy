@@ -5,43 +5,12 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/pivotal-cf-experimental/envoy"
-	"github.com/pivotal-cf-experimental/envoy/domain"
 	"github.com/pivotal-cf-experimental/envoy/internal/handlers"
 	"github.com/pivotal-cf-experimental/envoy/internal/middleware"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
-
-type TestBroker struct{}
-
-func NewTestBroker() *TestBroker {
-	return &TestBroker{}
-}
-
-func (broker TestBroker) Credentials() (string, string) {
-	return "username", "password"
-}
-
-func (broker *TestBroker) Provision(instance domain.ProvisionRequest) (domain.ProvisionResponse, error) {
-	return domain.ProvisionResponse{}, nil
-}
-
-func (broker *TestBroker) Bind(binding domain.BindRequest) (domain.BindResponse, error) {
-	return domain.BindResponse{}, nil
-}
-
-func (broker *TestBroker) Unbind(unbinding domain.UnbindRequest) error {
-	return nil
-}
-
-func (broker *TestBroker) Deprovision(deprovision domain.DeprovisionRequest) error {
-	return nil
-}
-
-func (b TestBroker) Catalog() domain.Catalog {
-	return domain.Catalog{}
-}
 
 var _ = Describe("BrokerHandler", func() {
 	var testBroker *TestBroker
@@ -67,7 +36,7 @@ var _ = Describe("BrokerHandler", func() {
 		})
 
 		It("enforces the HTTP verb used", func() {
-			request, err := http.NewRequest("POST", "/v2/catalog", nil)
+			request, err := http.NewRequest("OPTIONS", "/v2/catalog", nil)
 			if err != nil {
 				panic(err)
 			}
@@ -92,7 +61,7 @@ var _ = Describe("BrokerHandler", func() {
 		})
 
 		It("enforces the HTTP verb used", func() {
-			request, err := http.NewRequest("GET", "/v2/service_instances/banana", nil)
+			request, err := http.NewRequest("OPTIONS", "/v2/service_instances/banana", nil)
 			if err != nil {
 				panic(err)
 			}
@@ -117,7 +86,7 @@ var _ = Describe("BrokerHandler", func() {
 		})
 
 		It("enforces the HTTP verb used", func() {
-			request, err := http.NewRequest("GET", "/v2/service_instances/banana/service_bindings/panic", nil)
+			request, err := http.NewRequest("OPTIONS", "/v2/service_instances/banana/service_bindings/panic", nil)
 			if err != nil {
 				panic(err)
 			}
@@ -142,7 +111,7 @@ var _ = Describe("BrokerHandler", func() {
 		})
 
 		It("enforces the HTTP verb used", func() {
-			request, err := http.NewRequest("GET", "/v2/service_instances/my-instance/service_bindings/some-service-binding", nil)
+			request, err := http.NewRequest("OPTIONS", "/v2/service_instances/my-instance/service_bindings/some-service-binding", nil)
 			if err != nil {
 				panic(err)
 			}
@@ -167,7 +136,7 @@ var _ = Describe("BrokerHandler", func() {
 		})
 
 		It("enforces the HTTP verb used", func() {
-			request, err := http.NewRequest("GET", "/v2/service_instances/my-instance", nil)
+			request, err := http.NewRequest("OPTIONS", "/v2/service_instances/my-instance", nil)
 			if err != nil {
 				panic(err)
 			}
@@ -178,7 +147,27 @@ var _ = Describe("BrokerHandler", func() {
 	})
 
 	Describe("Service instance details endpoint: GET /v2/service_instances/:instance_id", func() {
-		PIt("routes to the ServiceInstanceDetailsHandler", func() {
+		It("routes to the ServiceInstanceDetailsHandler", func() {
+			request, err := http.NewRequest("GET", "/v2/service_instances/my-instance", nil)
+			if err != nil {
+				panic(err)
+			}
+
+			var match mux.RouteMatch
+			Expect(router.Match(request, &match)).To(BeTrue())
+			Expect(match.Handler).To(BeAssignableToTypeOf(middleware.Authenticator{}))
+			auth := match.Handler.(middleware.Authenticator)
+			Expect(auth.Handler).To(BeAssignableToTypeOf(handlers.ServiceInstanceDetailsHandler{}))
+		})
+
+		It("enforces the HTTP verb used", func() {
+			request, err := http.NewRequest("OPTIONS", "/v2/service_instances/my-instance", nil)
+			if err != nil {
+				panic(err)
+			}
+
+			var match mux.RouteMatch
+			Expect(router.Match(request, &match)).To(BeFalse())
 		})
 	})
 })

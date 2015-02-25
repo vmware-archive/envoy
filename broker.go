@@ -9,4 +9,5 @@ type Broker interface {
 	Bind(domain.BindRequest) (domain.BindResponse, error)
 	Unbind(domain.UnbindRequest) error
 	Deprovision(domain.DeprovisionRequest) error
+	ServiceInstanceDetails(domain.ServiceInstanceDetailsRequest) (domain.ServiceInstanceDetailsResponse, error)
 }

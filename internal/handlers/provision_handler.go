@@ -32,18 +32,20 @@ func (handler ProvisionHandler) ServeHTTP(w http.ResponseWriter, req *http.Reque
 	request := handler.Parse(req)
 	response, err := handler.provisioner.Provision(request)
 	if err != nil {
-		if err == domain.ServiceInstanceAlreadyExistsError {
+		switch err {
+		case domain.ServiceInstanceAlreadyExistsError:
 			respond(w, http.StatusConflict, EmptyJSON)
-		} else if err == domain.AsyncRequiredError {
+		case domain.AsyncRequiredError:
 			respond(w, 422, Failure{
 				Description: "This service plan requires support for asynchronous provisioning by Cloud Foundry and its clients.",
 				Error:       "AsyncRequired",
 			})
-		} else {
+		default:
 			respond(w, http.StatusInternalServerError, Failure{
 				Description: err.Error(),
 			})
 		}
+
 		return
 	}
 	state := StateSucceeded
