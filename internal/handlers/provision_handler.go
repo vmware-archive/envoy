@@ -9,11 +9,6 @@ import (
 	"github.com/pivotal-cf-experimental/envoy/domain"
 )
 
-const (
-	StateSucceeded  = "succeeded"
-	StateInProgress = "in progress"
-)
-
 type Provisioner interface {
 	Provision(domain.ProvisionRequest) (domain.ProvisionResponse, error)
 }
@@ -48,11 +43,11 @@ func (handler ProvisionHandler) ServeHTTP(w http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	state := StateSucceeded
+	state := domain.ServiceInstanceOperationSucceeded
 	status := http.StatusCreated
 
 	if response.Async {
-		state = StateInProgress
+		state = domain.ServiceInstanceOperationInProgress
 		status = http.StatusAccepted
 	}
 
