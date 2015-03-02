@@ -7,15 +7,15 @@ import (
 	"github.com/pivotal-cf-experimental/envoy/domain"
 )
 
-type Unbinder interface {
+type unbinder interface {
 	Unbind(domain.UnbindRequest) error
 }
 
 type UnbindHandler struct {
-	unbinder Unbinder
+	unbinder
 }
 
-func NewUnbindHandler(unbinder Unbinder) UnbindHandler {
+func NewUnbindHandler(unbinder unbinder) UnbindHandler {
 	return UnbindHandler{
 		unbinder: unbinder,
 	}

@@ -6,15 +6,15 @@ import (
 	"github.com/pivotal-cf-experimental/envoy/domain"
 )
 
-type Cataloger interface {
+type cataloger interface {
 	Catalog() domain.Catalog
 }
 
 type CatalogHandler struct {
-	cataloger Cataloger
+	cataloger
 }
 
-func NewCatalogHandler(cataloger Cataloger) CatalogHandler {
+func NewCatalogHandler(cataloger cataloger) CatalogHandler {
 	return CatalogHandler{
 		cataloger: cataloger,
 	}

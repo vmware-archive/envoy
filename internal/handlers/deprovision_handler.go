@@ -7,15 +7,15 @@ import (
 	"github.com/pivotal-cf-experimental/envoy/domain"
 )
 
-type Deprovisioner interface {
+type deprovisioner interface {
 	Deprovision(domain.DeprovisionRequest) error
 }
 
 type DeprovisionHandler struct {
-	deprovisioner Deprovisioner
+	deprovisioner
 }
 
-func NewDeprovisionHandler(deprovisioner Deprovisioner) DeprovisionHandler {
+func NewDeprovisionHandler(deprovisioner deprovisioner) DeprovisionHandler {
 	return DeprovisionHandler{
 		deprovisioner: deprovisioner,
 	}

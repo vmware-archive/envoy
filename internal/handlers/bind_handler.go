@@ -9,15 +9,15 @@ import (
 	"github.com/pivotal-cf-experimental/envoy/domain"
 )
 
-type Binder interface {
+type binder interface {
 	Bind(domain.BindRequest) (domain.BindResponse, error)
 }
 
 type BindHandler struct {
-	binder Binder
+	binder
 }
 
-func NewBindHandler(binder Binder) BindHandler {
+func NewBindHandler(binder binder) BindHandler {
 	return BindHandler{
 		binder: binder,
 	}

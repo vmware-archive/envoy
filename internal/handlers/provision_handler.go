@@ -9,15 +9,15 @@ import (
 	"github.com/pivotal-cf-experimental/envoy/domain"
 )
 
-type Provisioner interface {
+type provisioner interface {
 	Provision(domain.ProvisionRequest) (domain.ProvisionResponse, error)
 }
 
 type ProvisionHandler struct {
-	provisioner Provisioner
+	provisioner
 }
 
-func NewProvisionHandler(provisioner Provisioner) ProvisionHandler {
+func NewProvisionHandler(provisioner provisioner) ProvisionHandler {
 	return ProvisionHandler{
 		provisioner: provisioner,
 	}
