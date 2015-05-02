@@ -72,6 +72,7 @@ var _ = Describe("UnbindHandler", func() {
 			handler.ServeHTTP(writer, request)
 
 			Expect(writer.Code).To(Equal(http.StatusOK))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
 			body, err := ioutil.ReadAll(writer.Body)
 			if err != nil {
@@ -97,6 +98,7 @@ var _ = Describe("UnbindHandler", func() {
 			handler.ServeHTTP(writer, request)
 
 			Expect(writer.Code).To(Equal(http.StatusGone))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
 			body, err := ioutil.ReadAll(writer.Body)
 			if err != nil {
@@ -121,6 +123,7 @@ var _ = Describe("UnbindHandler", func() {
 			handler.ServeHTTP(writer, request)
 
 			Expect(writer.Code).To(Equal(http.StatusInternalServerError))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
 			body, err := ioutil.ReadAll(writer.Body)
 			if err != nil {

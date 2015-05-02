@@ -90,6 +90,7 @@ var _ = Describe("BindHandler", func() {
 		handler.ServeHTTP(writer, request)
 
 		Expect(writer.Code).To(Equal(http.StatusCreated))
+		Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 		body, err := ioutil.ReadAll(writer.Body)
 		if err != nil {
 			panic(err)
@@ -128,6 +129,7 @@ var _ = Describe("BindHandler", func() {
 			handler.ServeHTTP(writer, request)
 
 			Expect(writer.Code).To(Equal(http.StatusCreated))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 			body, err := ioutil.ReadAll(writer.Body)
 			if err != nil {
 				panic(err)
@@ -169,6 +171,7 @@ var _ = Describe("BindHandler", func() {
 			handler.ServeHTTP(writer, request)
 
 			Expect(writer.Code).To(Equal(http.StatusCreated))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 			body, err := ioutil.ReadAll(writer.Body)
 			if err != nil {
 				panic(err)
@@ -203,6 +206,7 @@ var _ = Describe("BindHandler", func() {
 			handler.ServeHTTP(writer, request)
 
 			Expect(writer.Code).To(Equal(http.StatusInternalServerError))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
 			body, err := ioutil.ReadAll(writer.Body)
 			if err != nil {
@@ -236,6 +240,7 @@ var _ = Describe("BindHandler", func() {
 			handler.ServeHTTP(writer, request)
 
 			Expect(writer.Code).To(Equal(http.StatusConflict))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
 			body, err := ioutil.ReadAll(writer.Body)
 			if err != nil {

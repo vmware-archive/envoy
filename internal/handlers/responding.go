@@ -17,6 +17,7 @@ func respond(w http.ResponseWriter, code int, response interface{}) {
 		panic(err)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(body)
 }

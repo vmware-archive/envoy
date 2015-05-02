@@ -71,6 +71,7 @@ var _ = Describe("DeprovisionHandler", func() {
 			handler.ServeHTTP(writer, request)
 
 			Expect(writer.Code).To(Equal(http.StatusOK))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
 			Expect(writer.Body.String()).To(MatchJSON("{}"))
 
@@ -92,6 +93,7 @@ var _ = Describe("DeprovisionHandler", func() {
 			handler.ServeHTTP(writer, request)
 
 			Expect(writer.Code).To(Equal(http.StatusGone))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 			Expect(writer.Body.String()).To(MatchJSON("{}"))
 		})
 	})
@@ -110,6 +112,7 @@ var _ = Describe("DeprovisionHandler", func() {
 			handler.ServeHTTP(writer, request)
 
 			Expect(writer.Code).To(Equal(http.StatusInternalServerError))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 			Expect(writer.Body.String()).To(MatchJSON(`{"description": "my database failed somehow!"}`))
 		})
 	})

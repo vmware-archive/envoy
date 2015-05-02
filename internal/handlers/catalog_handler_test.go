@@ -94,6 +94,7 @@ var _ = Describe("CatalogHandler", func() {
 		handler.ServeHTTP(writer, request)
 
 		Expect(writer.Code).To(Equal(http.StatusOK))
+		Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
 		body, err := ioutil.ReadAll(writer.Body)
 		Expect(err).NotTo(HaveOccurred())
