@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 
@@ -65,11 +64,7 @@ var _ = Describe("Provision Handler", func() {
 			Expect(writer.Code).To(Equal(http.StatusCreated))
 			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
-			body, err := ioutil.ReadAll(writer.Body)
-			if err != nil {
-				panic(err)
-			}
-			Expect(body).To(MatchJSON("{}"))
+			Expect(writer.Body.String()).To(MatchJSON("{}"))
 
 			Expect(provisioner.WasCalledWith).To(Equal(domain.ProvisionRequest{
 				InstanceID:       "i-dont-care-terribly",
@@ -108,11 +103,7 @@ var _ = Describe("Provision Handler", func() {
 			Expect(writer.Code).To(Equal(http.StatusCreated))
 			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
-			body, err := ioutil.ReadAll(writer.Body)
-			if err != nil {
-				panic(err)
-			}
-			Expect(body).To(MatchJSON(`{
+			Expect(writer.Body.String()).To(MatchJSON(`{
 				"dashboard_url":"http://www.example.com/my-silly-dashboard-url"
 			}`))
 
@@ -153,11 +144,7 @@ var _ = Describe("Provision Handler", func() {
 			Expect(writer.Code).To(Equal(http.StatusInternalServerError))
 			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
-			body, err := ioutil.ReadAll(writer.Body)
-			if err != nil {
-				panic(err)
-			}
-			Expect(body).To(MatchJSON(`{"description":"BOOM!"}`))
+			Expect(writer.Body.String()).To(MatchJSON(`{"description":"BOOM!"}`))
 		})
 	})
 
@@ -188,11 +175,7 @@ var _ = Describe("Provision Handler", func() {
 			Expect(writer.Code).To(Equal(http.StatusConflict))
 			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
-			body, err := ioutil.ReadAll(writer.Body)
-			if err != nil {
-				panic(err)
-			}
-			Expect(body).To(MatchJSON(`{}`))
+			Expect(writer.Body.String()).To(MatchJSON(`{}`))
 		})
 	})
 })

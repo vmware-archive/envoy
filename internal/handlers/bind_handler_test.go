@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 
@@ -91,11 +90,7 @@ var _ = Describe("BindHandler", func() {
 
 		Expect(writer.Code).To(Equal(http.StatusCreated))
 		Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
-		body, err := ioutil.ReadAll(writer.Body)
-		if err != nil {
-			panic(err)
-		}
-		Expect(body).To(MatchJSON("{}"))
+		Expect(writer.Body.String()).To(MatchJSON("{}"))
 	})
 
 	Context("when binding credentials are provided", func() {
@@ -130,11 +125,7 @@ var _ = Describe("BindHandler", func() {
 
 			Expect(writer.Code).To(Equal(http.StatusCreated))
 			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
-			body, err := ioutil.ReadAll(writer.Body)
-			if err != nil {
-				panic(err)
-			}
-			Expect(body).To(MatchJSON(`{
+			Expect(writer.Body.String()).To(MatchJSON(`{
 				"credentials": {
 					"uri":      "mysql://mysqluser:pass@mysqlhost:3306/dbname",
 					"username": "mysqluser",
@@ -172,11 +163,7 @@ var _ = Describe("BindHandler", func() {
 
 			Expect(writer.Code).To(Equal(http.StatusCreated))
 			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
-			body, err := ioutil.ReadAll(writer.Body)
-			if err != nil {
-				panic(err)
-			}
-			Expect(body).To(MatchJSON(`{
+			Expect(writer.Body.String()).To(MatchJSON(`{
 				"syslog_drain_url": "syslog://something"
 			}`))
 		})
@@ -208,11 +195,7 @@ var _ = Describe("BindHandler", func() {
 			Expect(writer.Code).To(Equal(http.StatusInternalServerError))
 			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
-			body, err := ioutil.ReadAll(writer.Body)
-			if err != nil {
-				panic(err)
-			}
-			Expect(body).To(MatchJSON(`{"description":"BANG!"}`))
+			Expect(writer.Body.String()).To(MatchJSON(`{"description":"BANG!"}`))
 		})
 	})
 
@@ -242,11 +225,7 @@ var _ = Describe("BindHandler", func() {
 			Expect(writer.Code).To(Equal(http.StatusConflict))
 			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
-			body, err := ioutil.ReadAll(writer.Body)
-			if err != nil {
-				panic(err)
-			}
-			Expect(body).To(MatchJSON(`{}`))
+			Expect(writer.Body.String()).To(MatchJSON(`{}`))
 		})
 	})
 })
