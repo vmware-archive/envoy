@@ -266,4 +266,71 @@ var _ = Describe("BindHandler", func() {
 			Expect(msg.Description).To(ContainSubstring("JSON"))
 		})
 	})
+
+	Context("when the request body is missing a required field", func() {
+		It("should not call the binder", func() {
+			writer := httptest.NewRecorder()
+
+			request, err := http.NewRequest("PUT", "/v2/service_instances/instance-guid/service_bindings/binding-guid", strings.NewReader("{}"))
+			if err != nil {
+				panic(err)
+			}
+
+			handler.ServeHTTP(writer, request)
+
+			Expect(binder.WasCalled).To(BeFalse())
+		})
+
+		It("should return a 400 and an error message", func() {
+			writer := httptest.NewRecorder()
+
+			request, err := http.NewRequest("PUT", "/v2/service_instances/instance-guid/service_bindings/binding-guid", strings.NewReader("{}"))
+			if err != nil {
+				panic(err)
+			}
+
+			handler.ServeHTTP(writer, request)
+
+			Expect(writer.Code).To(Equal(http.StatusBadRequest))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
+
+			var msg struct {
+				Description string `json:"description"`
+			}
+			Expect(json.Unmarshal(writer.Body.Bytes(), &msg)).To(Succeed())
+			Expect(msg.Description).To(ContainSubstring("missing required field"))
+		})
+	})
+
+	Context("when the request body is missing the app_guid field", func() {
+		It("should succeed, in order to support app-less service keys", func() {
+			writer := httptest.NewRecorder()
+			reqBody, err := json.Marshal(map[string]string{
+				"service_id": "service-id",
+				"plan_id":    "plan-id",
+			})
+			if err != nil {
+				panic(err)
+			}
+
+			request, err := http.NewRequest("PUT", "/v2/service_instances/service-instance-id/service_bindings/service-binding-id", bytes.NewBuffer(reqBody))
+			if err != nil {
+				panic(err)
+			}
+
+			handler.ServeHTTP(writer, request)
+
+			Expect(writer.Code).To(Equal(http.StatusCreated))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
+			Expect(writer.Body.String()).To(MatchJSON("{}"))
+
+			Expect(binder.WasCalledWith).To(Equal(domain.BindRequest{
+				BindingID:  "service-binding-id",
+				InstanceID: "service-instance-id",
+				ServiceID:  "service-id",
+				PlanID:     "plan-id",
+				AppGUID:    "",
+			}))
+		})
+	})
 })

@@ -67,10 +67,15 @@ func (handler ProvisionHandler) Parse(req *http.Request) (domain.ProvisionReques
 	}
 
 	expression := regexp.MustCompile(`^/v2/service_instances/(.*)$`)
-	matches := expression.FindStringSubmatch(req.URL.Path)
+	instanceID := expression.FindStringSubmatch(req.URL.Path)[1]
+
+	if len(instanceID) == 0 || len(params.ServiceID) == 0 || len(params.PlanID) == 0 ||
+		len(params.OrganizationGUID) == 0 || len(params.SpaceGUID) == 0 {
+		return domain.ProvisionRequest{}, errors.New("missing required field")
+	}
 
 	return domain.ProvisionRequest{
-		InstanceID:       matches[1],
+		InstanceID:       instanceID,
 		ServiceID:        params.ServiceID,
 		PlanID:           params.PlanID,
 		OrganizationGUID: params.OrganizationGUID,

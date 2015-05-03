@@ -70,10 +70,16 @@ func (handler BindHandler) Parse(req *http.Request) (domain.BindRequest, error) 
 
 	expression := regexp.MustCompile(`^/v2/service_instances/(.*)/service_bindings/(.*)$`)
 	matches := expression.FindStringSubmatch(req.URL.Path)
+	instanceID, bindingID := matches[1], matches[2]
+
+	if len(instanceID) == 0 || len(bindingID) == 0 ||
+		len(params.ServiceID) == 0 || len(params.PlanID) == 0 {
+		return domain.BindRequest{}, errors.New("missing required field")
+	}
 
 	return domain.BindRequest{
-		BindingID:  matches[2],
-		InstanceID: matches[1],
+		BindingID:  bindingID,
+		InstanceID: instanceID,
 		ServiceID:  params.ServiceID,
 		PlanID:     params.PlanID,
 		AppGUID:    params.AppGUID,

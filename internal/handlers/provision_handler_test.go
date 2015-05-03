@@ -215,4 +215,39 @@ var _ = Describe("Provision Handler", func() {
 			Expect(msg.Description).To(ContainSubstring("JSON"))
 		})
 	})
+
+	Context("when the request body is missing a required field", func() {
+		It("should not call the provisioner", func() {
+			writer := httptest.NewRecorder()
+
+			request, err := http.NewRequest("PUT", "/v2/service_instances/a-guid", strings.NewReader("{}"))
+			if err != nil {
+				panic(err)
+			}
+
+			handler.ServeHTTP(writer, request)
+
+			Expect(provisioner.WasCalled).To(BeFalse())
+		})
+
+		It("should return a 400 and an error message", func() {
+			writer := httptest.NewRecorder()
+
+			request, err := http.NewRequest("PUT", "/v2/service_instances/a-guid", strings.NewReader("{}"))
+			if err != nil {
+				panic(err)
+			}
+
+			handler.ServeHTTP(writer, request)
+
+			Expect(writer.Code).To(Equal(http.StatusBadRequest))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
+
+			var msg struct {
+				Description string `json:"description"`
+			}
+			Expect(json.Unmarshal(writer.Body.Bytes(), &msg)).To(Succeed())
+			Expect(msg.Description).To(ContainSubstring("missing required field"))
+		})
+	})
 })
