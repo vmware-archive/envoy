@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"regexp"
 
@@ -22,9 +23,13 @@ func NewUnbindHandler(unbinder unbinder) UnbindHandler {
 }
 
 func (handler UnbindHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	request := handler.Parse(req)
+	request, err := handler.Parse(req)
+	if err != nil {
+		respond(w, http.StatusBadRequest, Failure{err.Error()})
+		return
+	}
 
-	err := handler.unbinder.Unbind(request)
+	err = handler.unbinder.Unbind(request)
 	if err != nil {
 		switch err.(type) {
 		case domain.ServiceBindingNotFoundError:
@@ -40,14 +45,21 @@ func (handler UnbindHandler) ServeHTTP(w http.ResponseWriter, req *http.Request)
 	respond(w, http.StatusOK, EmptyJSON)
 }
 
-func (handler UnbindHandler) Parse(req *http.Request) domain.UnbindRequest {
+func (handler UnbindHandler) Parse(req *http.Request) (domain.UnbindRequest, error) {
 	expression := regexp.MustCompile(`^/v2/service_instances/(.*)/service_bindings/(.*)$`)
 	matches := expression.FindStringSubmatch(req.URL.Path)
+
+	serviceIDValues := req.URL.Query()["service_id"]
+	planIDValues := req.URL.Query()["plan_id"]
+
+	if len(serviceIDValues) != 1 || len(planIDValues) != 1 {
+		return domain.UnbindRequest{}, errors.New("query parameters 'service_id' and 'plan_id' are required.")
+	}
 
 	return domain.UnbindRequest{
 		BindingID:  matches[2],
 		InstanceID: matches[1],
-		ServiceID:  req.URL.Query()["service_id"][0],
-		PlanID:     req.URL.Query()["plan_id"][0],
-	}
+		ServiceID:  serviceIDValues[0],
+		PlanID:     planIDValues[0],
+	}, nil
 }

@@ -1,6 +1,7 @@
 package handlers_test
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -131,6 +132,42 @@ var _ = Describe("UnbindHandler", func() {
 			}
 
 			Expect(body).To(MatchJSON(`{"description": "my database failed somehow!"}`))
+		})
+	})
+
+	Context("when the request is missing a required parameter", func() {
+		It("should not call the unbinder", func() {
+			writer := httptest.NewRecorder()
+
+			url := "/v2/service_instances/service-instance-id/service_bindings/a-binding-id?plan_id=some-plan-id"
+			request, err := http.NewRequest("DELETE", url, nil)
+			if err != nil {
+				panic(err)
+			}
+
+			handler.ServeHTTP(writer, request)
+
+			Expect(unbinder.WasCalledWith.BindingID).To(BeEmpty())
+		})
+
+		It("should return a 400 error with a helpful message", func() {
+			writer := httptest.NewRecorder()
+
+			url := "/v2/service_instances/service-instance-id/service_bindings/a-binding-id?plan_id=some-plan-id"
+			request, err := http.NewRequest("DELETE", url, nil)
+			if err != nil {
+				panic(err)
+			}
+
+			handler.ServeHTTP(writer, request)
+
+			Expect(writer.Code).To(Equal(http.StatusBadRequest))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
+			var msg struct {
+				Description string `json:"description"`
+			}
+			Expect(json.Unmarshal(writer.Body.Bytes(), &msg)).To(Succeed())
+			Expect(msg.Description).To(ContainSubstring("service_id"))
 		})
 	})
 
