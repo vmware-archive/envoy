@@ -16,11 +16,13 @@ import (
 
 type Deprovisioner struct {
 	WasCalledWith    domain.DeprovisionRequest
+	WasCalled        bool
 	DeprovisionError error
 }
 
 func (d *Deprovisioner) Deprovision(deprovisionRequest domain.DeprovisionRequest) error {
 	d.WasCalledWith = deprovisionRequest
+	d.WasCalled = true
 	return d.DeprovisionError
 }
 
@@ -130,7 +132,7 @@ var _ = Describe("DeprovisionHandler", func() {
 
 			handler.ServeHTTP(writer, request)
 
-			Expect(deprovisioner.WasCalledWith.InstanceID).To(BeEmpty())
+			Expect(deprovisioner.WasCalled).To(BeFalse())
 		})
 
 		It("should return a 400 error with a helpful message", func() {

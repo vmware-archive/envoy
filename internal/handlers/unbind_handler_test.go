@@ -18,6 +18,7 @@ import (
 type Unbinder struct {
 	WasCalledWith domain.UnbindRequest
 	UnbindError   error
+	WasCalled     bool
 }
 
 func NewUnbinder() *Unbinder {
@@ -26,6 +27,7 @@ func NewUnbinder() *Unbinder {
 
 func (f *Unbinder) Unbind(req domain.UnbindRequest) error {
 	f.WasCalledWith = req
+	f.WasCalled = true
 	return f.UnbindError
 }
 
@@ -147,7 +149,7 @@ var _ = Describe("UnbindHandler", func() {
 
 			handler.ServeHTTP(writer, request)
 
-			Expect(unbinder.WasCalledWith.BindingID).To(BeEmpty())
+			Expect(unbinder.WasCalled).To(BeFalse())
 		})
 
 		It("should return a 400 error with a helpful message", func() {
