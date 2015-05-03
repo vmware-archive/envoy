@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 
 	"github.com/pivotal-cf-experimental/envoy/domain"
 	"github.com/pivotal-cf-experimental/envoy/internal/handlers"
@@ -16,6 +17,7 @@ import (
 
 type Provisioner struct {
 	WasCalledWith domain.ProvisionRequest
+	WasCalled     bool
 	Error         error
 	DashboardURL  string
 }
@@ -26,7 +28,7 @@ func NewProvisioner() *Provisioner {
 
 func (p *Provisioner) Provision(req domain.ProvisionRequest) (domain.ProvisionResponse, error) {
 	p.WasCalledWith = req
-
+	p.WasCalled = true
 	return domain.ProvisionResponse{
 		DashboardURL: p.DashboardURL,
 	}, p.Error
@@ -176,6 +178,41 @@ var _ = Describe("Provision Handler", func() {
 			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
 			Expect(writer.Body.String()).To(MatchJSON(`{}`))
+		})
+	})
+
+	Context("when the request body is not valid JSON", func() {
+		It("should not call the provisioner", func() {
+			writer := httptest.NewRecorder()
+
+			request, err := http.NewRequest("PUT", "/v2/service_instances/a-guid", strings.NewReader("{"))
+			if err != nil {
+				panic(err)
+			}
+
+			handler.ServeHTTP(writer, request)
+
+			Expect(provisioner.WasCalled).To(BeFalse())
+		})
+
+		It("should return a 400 and an error message", func() {
+			writer := httptest.NewRecorder()
+
+			request, err := http.NewRequest("PUT", "/v2/service_instances/a-guid", strings.NewReader("{"))
+			if err != nil {
+				panic(err)
+			}
+
+			handler.ServeHTTP(writer, request)
+
+			Expect(writer.Code).To(Equal(http.StatusBadRequest))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
+
+			var msg struct {
+				Description string `json:"description"`
+			}
+			Expect(json.Unmarshal(writer.Body.Bytes(), &msg)).To(Succeed())
+			Expect(msg.Description).To(ContainSubstring("JSON"))
 		})
 	})
 })

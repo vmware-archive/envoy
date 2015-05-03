@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -24,7 +25,11 @@ func NewProvisionHandler(provisioner provisioner) ProvisionHandler {
 }
 
 func (handler ProvisionHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	request := handler.Parse(req)
+	request, err := handler.Parse(req)
+	if err != nil {
+		respond(w, http.StatusBadRequest, Failure{err.Error()})
+		return
+	}
 	response, err := handler.provisioner.Provision(request)
 	if err != nil {
 		if err == domain.ServiceInstanceAlreadyExistsError {
@@ -44,7 +49,7 @@ func (handler ProvisionHandler) ServeHTTP(w http.ResponseWriter, req *http.Reque
 	})
 }
 
-func (handler ProvisionHandler) Parse(req *http.Request) domain.ProvisionRequest {
+func (handler ProvisionHandler) Parse(req *http.Request) (domain.ProvisionRequest, error) {
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		panic(err)
@@ -58,7 +63,7 @@ func (handler ProvisionHandler) Parse(req *http.Request) domain.ProvisionRequest
 	}
 	err = json.Unmarshal(body, &params)
 	if err != nil {
-		panic(err)
+		return domain.ProvisionRequest{}, errors.New("request body must be a JSON object")
 	}
 
 	expression := regexp.MustCompile(`^/v2/service_instances/(.*)$`)
@@ -70,5 +75,5 @@ func (handler ProvisionHandler) Parse(req *http.Request) domain.ProvisionRequest
 		PlanID:           params.PlanID,
 		OrganizationGUID: params.OrganizationGUID,
 		SpaceGUID:        params.SpaceGUID,
-	}
+	}, nil
 }

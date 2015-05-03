@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -24,7 +25,11 @@ func NewBindHandler(binder binder) BindHandler {
 }
 
 func (handler BindHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	request := handler.Parse(req)
+	request, err := handler.Parse(req)
+	if err != nil {
+		respond(w, http.StatusBadRequest, Failure{err.Error()})
+		return
+	}
 
 	response, err := handler.binder.Bind(request)
 	if err != nil {
@@ -47,7 +52,7 @@ func (handler BindHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
-func (handler BindHandler) Parse(req *http.Request) domain.BindRequest {
+func (handler BindHandler) Parse(req *http.Request) (domain.BindRequest, error) {
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		panic(err)
@@ -60,7 +65,7 @@ func (handler BindHandler) Parse(req *http.Request) domain.BindRequest {
 	}
 	err = json.Unmarshal(body, &params)
 	if err != nil {
-		panic(err)
+		return domain.BindRequest{}, errors.New("request body must be a JSON object")
 	}
 
 	expression := regexp.MustCompile(`^/v2/service_instances/(.*)/service_bindings/(.*)$`)
@@ -72,5 +77,5 @@ func (handler BindHandler) Parse(req *http.Request) domain.BindRequest {
 		ServiceID:  params.ServiceID,
 		PlanID:     params.PlanID,
 		AppGUID:    params.AppGUID,
-	}
+	}, nil
 }

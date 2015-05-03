@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 
 	"github.com/pivotal-cf-experimental/envoy/domain"
 	"github.com/pivotal-cf-experimental/envoy/internal/handlers"
@@ -15,6 +16,7 @@ import (
 )
 
 type Binder struct {
+	WasCalled      bool
 	WasCalledWith  domain.BindRequest
 	Credentials    domain.BindingCredentials
 	Error          error
@@ -27,6 +29,7 @@ func NewBinder() *Binder {
 
 func (b *Binder) Bind(binding domain.BindRequest) (domain.BindResponse, error) {
 	b.WasCalledWith = binding
+	b.WasCalled = true
 
 	return domain.BindResponse{
 		Credentials:    b.Credentials,
@@ -226,6 +229,41 @@ var _ = Describe("BindHandler", func() {
 			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
 
 			Expect(writer.Body.String()).To(MatchJSON(`{}`))
+		})
+	})
+
+	Context("when the request body is not valid JSON", func() {
+		It("should not call the binder", func() {
+			writer := httptest.NewRecorder()
+
+			request, err := http.NewRequest("PUT", "/v2/service_instances/instance-guid/service_bindings/binding-guid", strings.NewReader("{"))
+			if err != nil {
+				panic(err)
+			}
+
+			handler.ServeHTTP(writer, request)
+
+			Expect(binder.WasCalled).To(BeFalse())
+		})
+
+		It("should return a 400 and an error message", func() {
+			writer := httptest.NewRecorder()
+
+			request, err := http.NewRequest("PUT", "/v2/service_instances/instance-guid/service_bindings/binding-guid", strings.NewReader("{"))
+			if err != nil {
+				panic(err)
+			}
+
+			handler.ServeHTTP(writer, request)
+
+			Expect(writer.Code).To(Equal(http.StatusBadRequest))
+			Expect(writer.Header()["Content-Type"]).To(Equal([]string{"application/json"}))
+
+			var msg struct {
+				Description string `json:"description"`
+			}
+			Expect(json.Unmarshal(writer.Body.Bytes(), &msg)).To(Succeed())
+			Expect(msg.Description).To(ContainSubstring("JSON"))
 		})
 	})
 })
