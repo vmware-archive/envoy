@@ -46,7 +46,7 @@ var _ = Describe("Catalog", func() {
 									Costs: []domain.Cost{
 										{
 											Amount: domain.Amount{
-												USD: 12.3,
+												"usd": 12.3,
 											},
 											Unit: "MONTHLY",
 										},

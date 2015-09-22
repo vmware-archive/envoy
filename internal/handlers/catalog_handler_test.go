@@ -50,7 +50,8 @@ func (c Cataloger) Catalog() domain.Catalog {
 							Costs: []domain.Cost{
 								{
 									Amount: domain.Amount{
-										USD: 12.3,
+										"usd": 12.3,
+										"eur": 10.9,
 									},
 									Unit: "MONTHLY",
 								},

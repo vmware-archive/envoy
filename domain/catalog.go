@@ -134,9 +134,7 @@ type Cost struct {
 }
 
 // Amount is a set of values describing the cost of the service plan.
-type Amount struct {
-	USD float64 `json:"usd"`
-}
+type Amount map[string]float64
 
 // DashboardClient contains the information necessary to activate the
 // Dashboard SSO feature for this service.
