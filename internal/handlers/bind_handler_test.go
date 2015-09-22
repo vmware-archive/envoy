@@ -202,7 +202,7 @@ var _ = Describe("BindHandler", func() {
 		})
 	})
 
-	Context("when the service binding has already been provisioned", func() {
+	Context("when the service binding has already been bound", func() {
 		BeforeEach(func() {
 			binder.Error = domain.ServiceBindingAlreadyExistsError("already exists")
 		})

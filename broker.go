@@ -23,7 +23,7 @@ type Cataloger interface {
 // Credentialer defines the interface for the Basic Auth credentials required to
 // interact with the service broker.
 type Credentialer interface {
-	Credentials() (string, string)
+	Credentials() (username, password string)
 }
 
 // Provisioner defines the interface for a request to provision a service.
