@@ -12,7 +12,7 @@ Provides a RESTful [Service Broker](http://docs.cloudfoundry.org/services/api.ht
 
 Here is a rather fanciful example of what one might implement for a service broker. It shows how to integrate your existing service with the service broker API using `envoy`.
 
-```golang
+```go
 package main
 
 import (
