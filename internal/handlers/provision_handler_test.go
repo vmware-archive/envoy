@@ -152,7 +152,7 @@ var _ = Describe("Provision Handler", func() {
 
 	Context("when the service instance has already been provisioned", func() {
 		BeforeEach(func() {
-			provisioner.Error = domain.ServiceInstanceAlreadyExistsError
+			provisioner.Error = domain.ServiceInstanceAlreadyExistsError("already exists")
 		})
 
 		It("returns a 409 and the error message", func() {

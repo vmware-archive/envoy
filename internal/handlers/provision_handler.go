@@ -32,9 +32,10 @@ func (handler ProvisionHandler) ServeHTTP(w http.ResponseWriter, req *http.Reque
 	}
 	response, err := handler.provisioner.Provision(request)
 	if err != nil {
-		if err == domain.ServiceInstanceAlreadyExistsError {
+		switch err.(type) {
+		case domain.ServiceInstanceAlreadyExistsError:
 			respond(w, http.StatusConflict, EmptyJSON)
-		} else {
+		default:
 			respond(w, http.StatusInternalServerError, Failure{
 				Description: err.Error(),
 			})

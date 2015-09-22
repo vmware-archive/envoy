@@ -33,9 +33,10 @@ func (handler BindHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	response, err := handler.binder.Bind(request)
 	if err != nil {
-		if err == domain.ServiceBindingAlreadyExistsError {
+		switch err.(type) {
+		case domain.ServiceBindingAlreadyExistsError:
 			respond(w, http.StatusConflict, EmptyJSON)
-		} else {
+		default:
 			respond(w, http.StatusInternalServerError, Failure{
 				Description: err.Error(),
 			})

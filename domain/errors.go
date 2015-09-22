@@ -1,17 +1,16 @@
 package domain
 
-import "errors"
+var ()
 
-var (
-	// ServiceInstanceAlreadyExistsError is an error used to
-	//indicate that this service instance has already been
-	// provisioned.
-	ServiceInstanceAlreadyExistsError = errors.New("service instance already exists")
+// ServiceInstanceAlreadyExistsError is an error type used to
+//indicate that this service instance has already been
+// provisioned.
+type ServiceInstanceAlreadyExistsError string
 
-	// ServiceBindingAlreadyExistsError is an error used to
-	// indicate that this service binding already exists.
-	ServiceBindingAlreadyExistsError = errors.New("service binding already exists")
-)
+// Error returns a string representation of the error message.
+func (e ServiceInstanceAlreadyExistsError) Error() string {
+	return string(e)
+}
 
 // ServiceInstanceNotFoundError is an error type used to indicate
 // that the service instance requested for deprovisioning cannot
@@ -20,6 +19,15 @@ type ServiceInstanceNotFoundError string
 
 // Error returns a string representation of the error message.
 func (e ServiceInstanceNotFoundError) Error() string {
+	return string(e)
+}
+
+// ServiceBindingAlreadyExistsError is an error type used to
+// indicate that this service binding already exists.
+type ServiceBindingAlreadyExistsError string
+
+// Error returns a string representation of the error message.
+func (e ServiceBindingAlreadyExistsError) Error() string {
 	return string(e)
 }
 

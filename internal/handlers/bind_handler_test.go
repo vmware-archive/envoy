@@ -204,7 +204,7 @@ var _ = Describe("BindHandler", func() {
 
 	Context("when the service binding has already been provisioned", func() {
 		BeforeEach(func() {
-			binder.Error = domain.ServiceBindingAlreadyExistsError
+			binder.Error = domain.ServiceBindingAlreadyExistsError("already exists")
 		})
 
 		It("returns a 409 and the error message", func() {
