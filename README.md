@@ -5,6 +5,7 @@ We've been told by the powers that be that you shouldn't be using this repo and 
 [CF Service Broker](https://github.com/pivotal-cf/brokerapi)
 
 # Envoy
+[![GoDoc](https://godoc.org/github.com/pivotal-cf-experimental/envoy?status.svg)](https://godoc.org/github.com/pivotal-cf-experimental/envoy)
 
 A CloudFoundry Service Broker front-end
 
