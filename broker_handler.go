@@ -9,6 +9,8 @@ import (
 	"github.com/pivotal-cf-experimental/envoy/internal/middleware"
 )
 
+// NewBrokerHandler returns an http.Handler that can be bound used to
+// serve HTTP requests for the CloudFoundry service broker API.
 func NewBrokerHandler(broker Broker) http.Handler {
 	catalogHandler := handlers.NewCatalogHandler(broker)
 	provisionHandler := handlers.NewProvisionHandler(broker)
